@@ -1,5 +1,5 @@
 const express = require("express");
-const cors = require("express");
+const cors = require("cors");
 require('dotenv').config()
 
 const app = express();
@@ -25,7 +25,26 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
 
+        const productsDB = client.db('productsDB')
+        const googleProducts = productsDB.collection('google-products');
+        const appleProducts = productsDB.collection('google-products');
+        const dellProducts = productsDB.collection('google-products');
+        const xiaomiProducts = productsDB.collection('google-products');
+        const samsungProducts = productsDB.collection('google-products');
+        const hpProducts = productsDB.collection('google-products');
 
+        app.get('/products', async (req, res) => {
+            const cursor = productsCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
+        app.post('/products', async (req, res) => {
+            const newProduct = req.body;
+            console.log(newProduct);
+            const result = await productsCollection.insertOne(newProduct);
+            res.send(result);
+        });
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
