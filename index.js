@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require('dotenv').config()
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -9,7 +10,6 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.6cq5lj6.mongodb.net/?retryWrites=true&w=majority`;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -25,17 +25,19 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
 
-        const productsDB = client.db('productsDB')
-        const googleProducts = productsDB.collection('google-products');
-        const appleProducts = productsDB.collection('google-products');
-        const dellProducts = productsDB.collection('google-products');
-        const xiaomiProducts = productsDB.collection('google-products');
-        const samsungProducts = productsDB.collection('google-products');
-        const hpProducts = productsDB.collection('google-products');
+        const productsCollection = client.db('sphereDB').collection('products');
 
         app.get('/products', async (req, res) => {
             const cursor = productsCollection.find();
             const result = await cursor.toArray();
+            res.send(result);
+        });
+
+        // Getting Products
+        app.get('/products/:brand', async (req, res) => {
+            const brandName = req.params.brand;
+            const query = { brandName: (brandName) };
+            const result = await productsCollection.find(query).toArray();
             res.send(result);
         });
 
@@ -55,7 +57,6 @@ async function run() {
     }
 }
 run().catch(console.dir);
-
 
 app.get('/', async (req, res) => {
     res.send('Server Running');
