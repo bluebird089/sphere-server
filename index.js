@@ -33,11 +33,42 @@ async function run() {
             res.send(result);
         });
 
-        // Getting Products
+        // Getting Products by brand name
         app.get('/products/:brand', async (req, res) => {
             const brandName = req.params.brand;
             const query = { brandName: (brandName) };
             const result = await productsCollection.find(query).toArray();
+            res.send(result);
+        });
+
+        // Getting Products by id
+        app.get('/product/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const query = { _id: new ObjectId(id) };
+            const result = await productsCollection.findOne(query);
+            res.send(result);
+        });
+
+        // Update Products by id
+        app.put('/product/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updatedProducts = req.body;
+            // photo, name, brandName, type, price, description, rating
+            const updateProduct = {
+                $set: {
+                    photo: updatedProducts.photo,
+                    name: updatedProducts.name,
+                    brandName: updatedProducts.brandName,
+                    type: updatedProducts.type,
+                    price: updatedProducts.price,
+                    description: updatedProducts.description,
+                    rating: updatedProducts.rating,
+                }
+            }
+            const result = await productsCollection.updateOne(filter, updateProduct, options);
             res.send(result);
         });
 
