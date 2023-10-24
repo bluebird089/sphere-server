@@ -78,10 +78,18 @@ async function run() {
             res.send(result);
         });
 
-        // Cart
+        // Cart DB
         app.get('/cart', async (req, res) => {
             const cursor = cartCollection.find();
             const result = await cursor.toArray();
+            res.send(result);
+        });
+
+        app.get('/cart/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const query = { _id: new ObjectId(id) };
+            const result = await productsCollection.findOne(query);
             res.send(result);
         });
 
