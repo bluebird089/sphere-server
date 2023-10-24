@@ -26,6 +26,7 @@ async function run() {
         await client.connect();
 
         const productsCollection = client.db('sphereDB').collection('products');
+        const cartCollection = client.db('sphereDB').collection('cart');
 
         app.get('/products', async (req, res) => {
             const cursor = productsCollection.find();
@@ -56,7 +57,6 @@ async function run() {
             const filter = { _id: new ObjectId(id) };
             const options = { upsert: true };
             const updatedProducts = req.body;
-            // photo, name, brandName, type, price, description, rating
             const updateProduct = {
                 $set: {
                     photo: updatedProducts.photo,
@@ -74,10 +74,23 @@ async function run() {
 
         app.post('/products', async (req, res) => {
             const newProduct = req.body;
-            console.log(newProduct);
-            const result = await productsCollection.insertOne(newProduct);
+            const result = await cartCollection.insertOne(newProduct);
             res.send(result);
         });
+
+        // Cart
+        app.get('/cart', async (req, res) => {
+            const cursor = cartCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
+        app.post('/cart', async (req, res) => {
+            const newProduct = req.body;
+            const result = await cartCollection.insertOne(newProduct);
+            res.send(result);
+        });
+        
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
