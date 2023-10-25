@@ -45,7 +45,6 @@ async function run() {
         // Getting Products by id
         app.get('/product/:id', async (req, res) => {
             const id = req.params.id;
-            console.log(id);
             const query = { _id: new ObjectId(id) };
             const result = await productsCollection.findOne(query);
             res.send(result);
@@ -74,7 +73,7 @@ async function run() {
 
         app.post('/products', async (req, res) => {
             const newProduct = req.body;
-            const result = await cartCollection.insertOne(newProduct);
+            const result = await productsCollection.insertOne(newProduct);
             res.send(result);
         });
 
